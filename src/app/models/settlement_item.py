@@ -4,10 +4,10 @@ from app.db.base_class import Base
 
 class SettlementItem(Base):
     settlement_item_id = Column(Integer, primary_key=True, autoincrement=True)
-    settlement_id = Column(BigInteger, ForeignKey("settlement.settlement_id"), nullable=False)
-    order_item_id = Column(BigInteger, ForeignKey("order_item.order_item_id"), nullable=False)
-    order_id = Column(BigInteger, ForeignKey("order.order_id"), nullable=False)
-    book_id = Column(BigInteger, ForeignKey("book.book_id"), nullable=False)
+    settlement_id = Column(Integer, ForeignKey("settlement.settlement_id"), nullable=False)
+    order_item_id = Column(Integer, ForeignKey("order_item.order_item_id"), nullable=False)
+    order_id = Column(Integer, ForeignKey("order.order_id"), nullable=False)
+    book_id = Column(Integer, ForeignKey("book.book_id"), nullable=False)
     
     quantity = Column(Integer, nullable=False)
     item_amount = Column(Integer, nullable=False)

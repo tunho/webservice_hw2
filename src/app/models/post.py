@@ -9,8 +9,8 @@ class Post(Base):
     content = Column(Text, nullable=False)
     view_count = Column(Integer, default=0)
     
-    user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    category_id = Column(Integer, ForeignKey("category.id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
+    category_id = Column(Integer, ForeignKey("category.category_id"), nullable=False)
     
     created_at = Column(DateTime(timezone=True), server_default=func.now())
     updated_at = Column(DateTime(timezone=True), onupdate=func.now())
