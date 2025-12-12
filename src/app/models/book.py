@@ -19,7 +19,7 @@ class Book(Base):
     categories = Column(Text, nullable=False) # JSON array
     publisher = Column(String(150), nullable=False)
     summary = Column(Text, nullable=True)
-    isbn = Column(String(13), unique=True, nullable=False)
+    isbn = Column(String(20), unique=True, nullable=False)
     
     price = Column(Integer, nullable=False)
     discount_rate = Column(Integer, default=0)
