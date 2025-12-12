@@ -12,7 +12,7 @@ class Ranking(Base):
     ranking_id = Column(Integer, primary_key=True, autoincrement=True)
     book_id = Column(Integer, ForeignKey("book.book_id"), nullable=False)
     
-    rank = Column(Integer, nullable=False)
+    ranking_position = Column(Integer, nullable=False)
     score = Column(Integer, nullable=False)
     
     category = Column(String(50), nullable=False)
@@ -27,6 +27,6 @@ class Ranking(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     
     __table_args__ = (
-        CheckConstraint('rank >= 1', name='check_rank_positive'),
+        CheckConstraint('ranking_position >= 1', name='check_rank_positive'),
         CheckConstraint('score >= 0', name='check_score_positive'),
     )
