@@ -10,7 +10,7 @@ class BookDiscountStatus(str, enum.Enum):
 
 class BookDiscount(Base):
     discount_id = Column(Integer, primary_key=True, autoincrement=True)
-    book_id = Column(BigInteger, ForeignKey("book.book_id"), nullable=False)
+    book_id = Column(Integer, ForeignKey("book.book_id"), nullable=False)
     
     discount_rate = Column(Integer, nullable=False)
     start_at = Column(DateTime, nullable=False)

@@ -9,7 +9,7 @@ class NoticeStatus(str, enum.Enum):
 
 class Notice(Base):
     notice_id = Column(Integer, primary_key=True, autoincrement=True)
-    admin_id = Column(BigInteger, ForeignKey("user.user_id"), nullable=False)
+    admin_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
     
     title = Column(String(200), nullable=False)
     content = Column(Text, nullable=False)
