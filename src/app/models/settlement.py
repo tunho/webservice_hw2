@@ -11,7 +11,7 @@ class SettlementStatus(str, enum.Enum):
 
 class Settlement(Base):
     settlement_id = Column(Integer, primary_key=True, autoincrement=True)
-    seller_id = Column(BigInteger, ForeignKey("seller.seller_id"), nullable=False)
+    seller_id = Column(Integer, ForeignKey("seller.seller_id"), nullable=False)
     
     total_sales = Column(Integer, nullable=False)
     commission = Column(Integer, default=0)

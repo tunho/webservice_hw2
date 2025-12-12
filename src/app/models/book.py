@@ -12,7 +12,7 @@ class BookStatus(str, enum.Enum):
 
 class Book(Base):
     book_id = Column(Integer, primary_key=True, autoincrement=True)
-    seller_id = Column(BigInteger, ForeignKey("seller.seller_id"), nullable=False)
+    seller_id = Column(Integer, ForeignKey("seller.seller_id"), nullable=False)
     
     title = Column(String(255), nullable=False)
     authors = Column(Text, nullable=False) # JSON array

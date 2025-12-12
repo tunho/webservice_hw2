@@ -12,7 +12,7 @@ class SellerStatus(str, enum.Enum):
 
 class Seller(Base):
     seller_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(BigInteger, ForeignKey("user.user_id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
     
     business_name = Column(String(120), nullable=False)
     business_number = Column(String(20), unique=True, nullable=False)

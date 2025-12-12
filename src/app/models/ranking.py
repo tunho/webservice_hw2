@@ -10,7 +10,7 @@ class RankingPeriod(str, enum.Enum):
 
 class Ranking(Base):
     ranking_id = Column(Integer, primary_key=True, autoincrement=True)
-    book_id = Column(BigInteger, ForeignKey("book.book_id"), nullable=False)
+    book_id = Column(Integer, ForeignKey("book.book_id"), nullable=False)
     
     rank = Column(Integer, nullable=False)
     score = Column(Integer, nullable=False)
