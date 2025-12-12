@@ -25,6 +25,17 @@ jobs:
         pip install pytest httpx
 
     - name: Run Tests
+      env:
+        PROJECT_NAME: "Test Bookstore"
+        API_V1_STR: "/api/v1"
+        SECRET_KEY: "test_secret_key"
+        DB_HOST: "localhost"
+        DB_PORT: "3306"
+        DB_USER: "root"
+        DB_PASSWORD: "password"
+        DB_NAME: "test_db"
+        FIRST_SUPERUSER: "admin@example.com"
+        FIRST_SUPERUSER_PASSWORD: "admin"
       run: |
         export PYTHONPATH=src
         pytest tests

@@ -11,7 +11,7 @@ class CartStatus(str, enum.Enum):
 
 class Cart(Base):
     cart_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(BigInteger, ForeignKey("user.user_id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
     
     total_amount = Column(Integer, default=0)
     status = Column(Enum(CartStatus), default=CartStatus.ACTIVE, nullable=False)

@@ -4,8 +4,8 @@ from app.db.base_class import Base
 
 class CommentLike(Base):
     like_id = Column(Integer, primary_key=True, autoincrement=True)
-    comment_id = Column(BigInteger, ForeignKey("comment.comment_id"), nullable=False)
-    user_id = Column(BigInteger, ForeignKey("user.user_id"), nullable=False)
+    comment_id = Column(Integer, ForeignKey("comment.comment_id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
     
     created_at = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
     

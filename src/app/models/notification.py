@@ -4,7 +4,7 @@ from app.db.base_class import Base
 
 class Notification(Base):
     notification_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(BigInteger, ForeignKey("user.user_id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
     
     type = Column(String(50), nullable=False)
     title = Column(String(150), nullable=False)

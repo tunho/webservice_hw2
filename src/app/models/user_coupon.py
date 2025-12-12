@@ -5,8 +5,8 @@ from app.db.base_class import Base
 
 class UserCoupon(Base):
     user_coupon_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(BigInteger, ForeignKey("user.user_id"), nullable=False)
-    coupon_id = Column(BigInteger, ForeignKey("coupon.coupon_id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
+    coupon_id = Column(Integer, ForeignKey("coupon.coupon_id"), nullable=False)
     
     is_used = Column(Boolean, default=False, nullable=False)
     used_at = Column(DateTime, nullable=True)

@@ -4,7 +4,7 @@ from app.db.base_class import Base
 
 class Log(Base):
     log_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(BigInteger, ForeignKey("user.user_id"), nullable=True)
+    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=True)
     
     action = Column(String(100), nullable=False)
     detail = Column(Text, nullable=True)

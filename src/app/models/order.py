@@ -18,7 +18,7 @@ class PaymentMethod(str, enum.Enum):
 
 class Order(Base):
     order_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(BigInteger, ForeignKey("user.user_id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
     
     total_price = Column(Integer, nullable=False)
     discount_amount = Column(Integer, default=0)

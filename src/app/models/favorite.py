@@ -5,8 +5,8 @@ from app.db.base_class import Base
 
 class Favorite(Base):
     favorite_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(BigInteger, ForeignKey("user.user_id"), nullable=False)
-    book_id = Column(BigInteger, ForeignKey("book.book_id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
+    book_id = Column(Integer, ForeignKey("book.book_id"), nullable=False)
     
     is_active = Column(Boolean, default=True, nullable=False)
     

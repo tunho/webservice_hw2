@@ -5,8 +5,8 @@ from app.db.base_class import Base
 
 class Comment(Base):
     comment_id = Column(Integer, primary_key=True, autoincrement=True)
-    review_id = Column(BigInteger, ForeignKey("review.review_id"), nullable=False)
-    user_id = Column(BigInteger, ForeignKey("user.user_id"), nullable=False)
+    review_id = Column(Integer, ForeignKey("review.review_id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
     
     content = Column(Text, nullable=False)
     like_count = Column(Integer, default=0)

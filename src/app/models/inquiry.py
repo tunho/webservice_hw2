@@ -10,7 +10,7 @@ class InquiryStatus(str, enum.Enum):
 
 class Inquiry(Base):
     inquiry_id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(BigInteger, ForeignKey("user.user_id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("user.user_id"), nullable=False)
     
     title = Column(String(150), nullable=False)
     message = Column(Text, nullable=False)
