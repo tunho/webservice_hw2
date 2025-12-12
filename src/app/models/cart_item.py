@@ -5,8 +5,8 @@ from app.db.base_class import Base
 
 class CartItem(Base):
     cart_item_id = Column(Integer, primary_key=True, autoincrement=True)
-    cart_id = Column(BigInteger, ForeignKey("cart.cart_id"), nullable=False)
-    book_id = Column(BigInteger, ForeignKey("book.book_id"), nullable=False)
+    cart_id = Column(Integer, ForeignKey("cart.cart_id"), nullable=False)
+    book_id = Column(Integer, ForeignKey("book.book_id"), nullable=False)
     
     quantity = Column(Integer, nullable=False)
     unit_price = Column(Integer, nullable=False)

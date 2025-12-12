@@ -5,8 +5,8 @@ from app.db.base_class import Base
 
 class OrderItem(Base):
     order_item_id = Column(Integer, primary_key=True, autoincrement=True)
-    order_id = Column(BigInteger, ForeignKey("order.order_id"), nullable=False)
-    book_id = Column(BigInteger, ForeignKey("book.book_id"), nullable=False)
+    order_id = Column(Integer, ForeignKey("order.order_id"), nullable=False)
+    book_id = Column(Integer, ForeignKey("book.book_id"), nullable=False)
     
     quantity = Column(Integer, nullable=False)
     unit_price = Column(Integer, nullable=False)
