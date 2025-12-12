@@ -7,7 +7,7 @@ from app.db.session import get_db
 from app.models.order import Order, OrderStatus
 from app.models.order_item import OrderItem
 from app.models.book import Book
-from app.models.user import User
+from app.models.user import User, UserRole
 from app.schemas.order import OrderCreate, OrderResponse
 
 router = APIRouter()

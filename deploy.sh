@@ -1,14 +1,14 @@
 #!/bin/bash
 
-# 1. Install dependencies
-echo "Installing dependencies..."
-pip install -r requirements.txt
+# 1. Pull latest changes
+echo "Pulling latest changes..."
+git pull origin main
 
-# 2. Set environment variables (if not already set)
-# export PYTHONPATH=src
+# 2. Build and start containers
+echo "Starting services with Docker..."
+docker-compose up -d --build
 
-# 3. Run the server
-echo "Starting server..."
-# Use gunicorn for production (if installed) or uvicorn directly
-# nohup uvicorn app.main:app --host 0.0.0.0 --port 8000 --workers 4 > app.log 2>&1 &
-PYTHONPATH=src uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+# 3. Prune unused images (optional, to save space)
+docker image prune -f
+
+echo "Deployment complete! Server is running."
