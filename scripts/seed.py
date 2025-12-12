@@ -2,6 +2,7 @@ import logging
 import random
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
+import json
 
 from app.core.config import settings
 from app.db.init_db import init_db
