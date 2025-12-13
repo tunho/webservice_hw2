@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 # 1. Pull latest changes
 echo "Pulling latest changes..."
