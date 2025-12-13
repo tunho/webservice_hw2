@@ -23,7 +23,7 @@ def test_create_review(client: TestClient, db: Session) -> None:
     
     # Create book
     book = Book(
-        seller_id=1,
+
         title="Review Book",
         authors="['Author']",
         categories="['Fiction']",
@@ -53,7 +53,7 @@ def test_create_review(client: TestClient, db: Session) -> None:
 def test_read_reviews(client: TestClient, db: Session) -> None:
     # Create book
     book = Book(
-        seller_id=1,
+
         title="Review List Book",
         authors="['Author']",
         categories="['Fiction']",

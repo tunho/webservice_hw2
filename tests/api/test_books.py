@@ -9,7 +9,7 @@ from app.core.security import get_password_hash
 def test_read_books(client: TestClient, db: Session) -> None:
     # Create book
     book = Book(
-        seller_id=1, # Mock seller
+
         title="Test Book",
         authors="['Test Author']",
         categories="['Fiction']",
@@ -35,7 +35,7 @@ def test_read_books(client: TestClient, db: Session) -> None:
 def test_read_book_by_id(client: TestClient, db: Session) -> None:
     # Create book
     book = Book(
-        seller_id=1,
+
         title="Single Book",
         authors="['Author']",
         categories="['Fiction']",

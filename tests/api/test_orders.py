@@ -22,7 +22,7 @@ def test_create_order(client: TestClient, db: Session) -> None:
     
     # Create book
     book = Book(
-        seller_id=1,
+
         title="Order Book",
         authors="['Author']",
         categories="['Fiction']",

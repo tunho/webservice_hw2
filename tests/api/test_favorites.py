@@ -22,7 +22,7 @@ def test_create_favorite(client: TestClient, db: Session) -> None:
     db.add(user)
     
     book = Book(
-        seller_id=1,
+
         title="Fav Book",
         authors="['Author']",
         categories="['Fiction']",
@@ -96,7 +96,7 @@ def test_delete_favorite(client: TestClient, db: Session) -> None:
     db.commit()
 
     book = Book(
-        seller_id=1,
+
         title="Fav Del Book",
         authors="['Author']",
         categories="['Fiction']",
