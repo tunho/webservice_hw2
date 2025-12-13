@@ -129,12 +129,15 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 
 *(자세한 명세는 Swagger UI 참조)*
 
-## 10. 성능/보안 고려사항
+## 10. 성능/보안 및 기술적 고려사항
 - **Rate Limiting**: `SlowAPI`를 적용하여 분당 요청 횟수 제한 (DDoS 방지).
 - **Password Hashing**: `bcrypt`를 사용하여 비밀번호를 안전하게 단방향 암호화 저장.
+- **CORS 설정**: 프론트엔드 연동 및 테스트를 위해 `CORSMiddleware` 적용 (모든 도메인 허용).
+- **Health Check**: `/health` 엔드포인트를 통해 서버 상태 및 버전 정보 제공 (인증 불필요).
 - **SQL Injection 방지**: SQLAlchemy ORM을 사용하여 쿼리 파라미터 바인딩 처리.
-- **N+1 문제 방지**: 연관 데이터 조회 시 Eager Loading(`joinedload`) 적절히 활용 (일부 복잡한 통계 제외).
-- **Soft Delete**: 주요 데이터(회원, 상품 등)는 `deleted_at`을 사용하여 논리적 삭제 처리, 데이터 복구 가능성 확보.
+- **N+1 문제 방지**: 연관 데이터 조회 시 Eager Loading(`joinedload`) 적절히 활용.
+- **DB 마이그레이션**: `scripts/seed.py` 및 SQLAlchemy `Base.metadata.create_all`을 통해 스키마 자동 생성 및 시드 데이터(200건+) 초기화.
+- **Soft Delete**: 주요 데이터(회원, 상품 등)는 `deleted_at`을 사용하여 논리적 삭제 처리.
 
 ## 11. 한계와 개선 계획
 - **한계**:
