@@ -1,13 +1,13 @@
 from typing import Any, List
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Path
 from sqlalchemy.orm import Session
 
 from app.api import deps
 from app.db.session import get_db
 from app.models.review import Review
 from app.models.book import Book
-from app.models.user import User
-from app.schemas.review import ReviewCreate, ReviewResponse
+from app.models.user import User, UserRole
+from app.schemas.review import ReviewCreate, ReviewResponse, ReviewUpdate
 
 router = APIRouter()
 
@@ -26,6 +26,14 @@ def create_review(
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
         
+    # Check if user already reviewed this book
+    existing_review = db.query(Review).filter(
+        Review.user_id == current_user.user_id,
+        Review.book_id == book_id
+    ).first()
+    if existing_review:
+        raise HTTPException(status_code=409, detail="A review for this book already exists.")
+        
     review = Review(
         user_id=current_user.user_id,
         book_id=book_id,
@@ -42,7 +50,7 @@ import math
 
 @router.get("/{book_id}", response_model=PageResponse[ReviewResponse])
 def read_reviews(
-    book_id: int,
+    book_id: int = Path(..., example=1),
     db: Session = Depends(get_db),
     page: int = 0,
     size: int = 20,
@@ -66,8 +74,8 @@ def read_reviews(
 
 @router.patch("/{review_id}")
 def update_review(
-    review_id: int,
-    review_in: ReviewCreate, # Reusing Create schema for simplicity, or create Update schema
+    review_in: ReviewUpdate,
+    review_id: int = Path(..., example=1),
     db: Session = Depends(get_db),
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
@@ -96,7 +104,7 @@ def update_review(
 
 @router.get("/{review_id}/detail", response_model=ReviewResponse)
 def read_review(
-    review_id: int,
+    review_id: int = Path(..., example=1),
     db: Session = Depends(get_db),
 ) -> Any:
     """
@@ -111,7 +119,7 @@ def read_review(
 def delete_review(
     *,
     db: Session = Depends(get_db),
-    review_id: int,
+    review_id: int = Path(..., example=1),
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """
@@ -123,6 +131,10 @@ def delete_review(
     if review.user_id != current_user.user_id and current_user.role != UserRole.ADMIN:
         raise HTTPException(status_code=403, detail="Not authorized")
         
-    db.delete(review)
-    db.commit()
+    try:
+        db.delete(review)
+        db.commit()
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=str(e))
     return {"message": "Review deleted"}

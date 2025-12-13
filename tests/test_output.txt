@@ -1,0 +1,117 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.3, pytest-9.0.1, pluggy-1.6.0
+rootdir: /home/lee/web_hw2
+plugins: anyio-4.12.0
+collected 21 items
+
+src/tests/test_api.py ...DEBUG: user.status=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: UserStatus.ACTIVE=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: Comparison=False
+DEBUG: {'timestamp': '2025-12-12T10:04:18.315798', 'path': '/api/v1/users/me', 'status': 400, 'code': 'VALIDATION_FAILED', 'message': 'Input validation failed', 'details': {'path.user_id': 'Input should be a valid integer, unable to parse string as an integer'}}
+FDEBUG: user.status=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: UserStatus.ACTIVE=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: Comparison=False
+...DEBUG: user.status=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: UserStatus.ACTIVE=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: Comparison=False
+.DEBUG: user.status=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: UserStatus.ACTIVE=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: Comparison=False
+....DEBUG: user.status=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: UserStatus.ACTIVE=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: Comparison=False
+.DEBUG: user.status=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: UserStatus.ACTIVE=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: Comparison=False
+.DEBUG: user.status=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: UserStatus.ACTIVE=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: Comparison=False
+DEBUG: user.status=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: UserStatus.ACTIVE=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: Comparison=False
+.DEBUG: user.status=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: UserStatus.ACTIVE=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: Comparison=False
+.DEBUG: user.status=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: UserStatus.ACTIVE=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: Comparison=False
+.DEBUG: user.status=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: UserStatus.ACTIVE=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: Comparison=False
+DEBUG: user.status=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: UserStatus.ACTIVE=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: Comparison=False
+.DEBUG: user.status=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: UserStatus.ACTIVE=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: Comparison=False
+..DEBUG: user.status=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: UserStatus.ACTIVE=UserStatus.ACTIVE type=<enum 'UserStatus'>
+DEBUG: Comparison=False
+.
+
+=================================== FAILURES ===================================
+_________________________________ test_get_me __________________________________
+
+    def test_get_me():
+        login = client.post("/api/v1/auth/login", data={"username": "user@test.com", "password": "user123"})
+        token = login.json()["access_token"]
+        response = client.get("/api/v1/users/me", headers={"Authorization": f"Bearer {token}"})
+        if response.status_code != 200:
+            print(f"DEBUG: {response.json()}")
+>       assert response.status_code == 200
+E       assert 400 == 200
+E        +  where 400 = <Response [400 Bad Request]>.status_code
+
+src/tests/test_api.py:89: AssertionError
+=============================== warnings summary ===============================
+src/app/core/config.py:4
+  /home/lee/web_hw2/src/app/core/config.py:4: PydanticDeprecatedSince20: Support for class-based `config` is deprecated, use ConfigDict instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    class Settings(BaseSettings):
+
+venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854
+  /home/lee/web_hw2/venv/lib/python3.12/site-packages/passlib/utils/__init__.py:854: DeprecationWarning: 'crypt' is deprecated and slated for removal in Python 3.13
+    from crypt import crypt as _crypt
+
+src/app/db/base_class.py:4
+  /home/lee/web_hw2/src/app/db/base_class.py:4: MovedIn20Warning: The ``as_declarative()`` function is now available as sqlalchemy.orm.as_declarative() (deprecated since: 2.0) (Background on SQLAlchemy 2.0 at: https://sqlalche.me/e/b8d9)
+    @as_declarative()
+
+src/tests/test_api.py: 41 warnings
+  /home/lee/web_hw2/src/app/core/middleware.py:47: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    now = datetime.utcnow()
+
+src/tests/test_api.py: 13 warnings
+  /home/lee/web_hw2/src/app/core/security.py:13: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    expire = datetime.utcnow() + expires_delta
+
+src/tests/test_api.py: 41 warnings
+  /home/lee/web_hw2/src/app/core/middleware.py:25: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    "timestamp": datetime.utcnow().isoformat(),
+
+src/tests/test_api.py::test_login_failure
+src/tests/test_api.py::test_create_user_duplicate_email
+src/tests/test_api.py::test_create_book_user_forbidden
+src/tests/test_api.py::test_get_book_not_found
+  /home/lee/web_hw2/src/app/core/exceptions.py:58: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp=datetime.utcnow(),
+
+src/tests/test_api.py::test_get_me
+  /home/lee/web_hw2/src/app/core/exceptions.py:77: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
+    timestamp=datetime.utcnow(),
+
+src/tests/test_api.py::test_update_me
+  /home/lee/web_hw2/src/app/api/api_v1/endpoints/users.py:132: PydanticDeprecatedSince20: The `dict` method is deprecated; use `model_dump` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    update_data = user_in.dict(exclude_unset=True)
+
+src/tests/test_api.py::test_create_user
+  /home/lee/web_hw2/src/app/api/api_v1/endpoints/users.py:59: PydanticDeprecatedSince20: The `dict` method is deprecated; use `model_dump` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    obj_in_data = user_in.dict()
+
+src/tests/test_api.py::test_create_book_admin
+  /home/lee/web_hw2/src/app/api/api_v1/endpoints/books.py:62: PydanticDeprecatedSince20: The `dict` method is deprecated; use `model_dump` instead. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.12/migration/
+    db_obj = Book(**book_in.dict())
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+FAILED src/tests/test_api.py::test_get_me - assert 400 == 200
+================== 1 failed, 20 passed, 106 warnings in 3.77s ==================

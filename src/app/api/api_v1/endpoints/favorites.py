@@ -71,6 +71,9 @@ def read_favorites(
     total_pages = math.ceil(total_elements / size)
     
     favorites = query.offset(page * size).limit(size).all()
+    # Ensure book data is loaded
+    for fav in favorites:
+        _ = fav.book
     
     return {
         "content": favorites,

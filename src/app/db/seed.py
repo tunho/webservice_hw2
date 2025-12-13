@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session
 from app.db.session import SessionLocal
 from app.core.security import get_password_hash
 from app.models.user import User, UserRole, UserStatus, Gender
-from app.models.seller import Seller, SellerStatus
 from app.models.book import Book, BookStatus
 from app.models.cart import Cart, CartStatus
 from app.models.cart_item import CartItem
@@ -36,22 +35,6 @@ def init_db(db: Session) -> None:
         db.add(admin)
         logger.info("Created Admin User")
 
-    # Seller User
-    seller_user = db.query(User).filter(User.email == "seller@example.com").first()
-    if not seller_user:
-        seller_user = User(
-            email="seller@example.com",
-            password=get_password_hash("seller123"),
-            name="Best Seller",
-            phone_number="010-1111-1111",
-            role=UserRole.SELLER,
-            status=UserStatus.ACTIVE,
-            gender=Gender.FEMALE,
-            birth_date=datetime(1995, 5, 5)
-        )
-        db.add(seller_user)
-        logger.info("Created Seller User")
-    
     # Customer User
     customer = db.query(User).filter(User.email == "customer@example.com").first()
     if not customer:
@@ -70,29 +53,9 @@ def init_db(db: Session) -> None:
 
     db.commit()
     
-    # Refresh objects to get IDs
-    if seller_user: db.refresh(seller_user)
     if customer: db.refresh(customer)
 
-    # 2. Create Seller Profile
-    seller_profile = db.query(Seller).filter(Seller.user_id == seller_user.user_id).first()
-    if not seller_profile:
-        seller_profile = Seller(
-            user_id=seller_user.user_id,
-            business_name="Amazing Books Co.",
-            business_number="123-45-67890",
-            email="biz@amazingbooks.com",
-            phone_number="02-1234-5678",
-            address="Seoul, Gangnam-gu",
-            payout_bank="K-Bank",
-            payout_account="111-222-333333",
-            payout_holder="Best Seller",
-            status=SellerStatus.ACTIVE
-        )
-        db.add(seller_profile)
-        logger.info("Created Seller Profile")
-        db.commit()
-        db.refresh(seller_profile)
+
 
     # 3. Create Books
     books_data = [
@@ -144,7 +107,7 @@ def init_db(db: Session) -> None:
         if not book:
             # Map fields
             book_in = {
-                "seller_id": seller_profile.seller_id,
+                # "seller_id": seller_profile.seller_id, # Removed
                 "status": BookStatus.AVAILABLE,
                 "title": b_data["title"],
                 "authors": json.dumps(b_data["authors"]),
@@ -266,12 +229,12 @@ def main() -> None:
         logger.info("Database seeded successfully!")
         
         # Fetch seller for bulk data
-        seller_user = db.query(User).filter(User.email == "seller@example.com").first()
-        seller_profile = db.query(Seller).filter(Seller.user_id == seller_user.user_id).first()
+        # seller_user = db.query(User).filter(User.email == "seller@example.com").first()
+        # seller_profile = db.query(Seller).filter(Seller.user_id == seller_user.user_id).first()
         
-        if not seller_profile:
-            print("Error: Seller profile not found for bulk data generation.")
-            return
+        # if not seller_profile:
+        #     print("Error: Seller profile not found for bulk data generation.")
+        #     return
 
         # --- Bulk Data Generation ---
         print("Generating bulk data...")
@@ -307,7 +270,7 @@ def main() -> None:
         books = []
         for i in range(50):
             book = Book(
-                seller_id=seller_profile.seller_id, # Use the captured seller_profile
+                # seller_id=seller_profile.seller_id, # Removed
                 title=f"Book Title {i}",
                 authors=json.dumps([f"Author {i}"]),
                 categories=json.dumps(["Fiction", "Adventure"] if i % 2 == 0 else ["Non-fiction", "Science"]),

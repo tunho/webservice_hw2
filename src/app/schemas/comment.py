@@ -21,3 +21,16 @@ class CommentResponse(CommentBase):
 
     class Config:
         from_attributes = True
+
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
+            "example": {
+                "content": "Great post! Thanks for sharing.",
+                "id": 1,
+                "post_id": 1,
+                "user_id": 1,
+                "created_at": "2025-01-01T00:00:00"
+            }
+        }
+    )

@@ -20,11 +20,9 @@ def read_cart(
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Get current active cart. Admin can view any user's cart by providing user_id.
+    Get current active cart.
     """
     target_user_id = current_user.user_id
-    if current_user.role == UserRole.ADMIN and user_id:
-        target_user_id = user_id
 
     cart = db.query(Cart).filter(
         Cart.user_id == target_user_id,
@@ -137,11 +135,9 @@ def read_cart_items(
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Get cart items. Admin can view any user's cart items by providing user_id.
+    Get cart items.
     """
     target_user_id = current_user.user_id
-    if current_user.role == UserRole.ADMIN and user_id:
-        target_user_id = user_id
 
     cart = db.query(Cart).filter(
         Cart.user_id == target_user_id,
@@ -202,3 +198,28 @@ def delete_cart_item(
     db.commit()
     
     return {"message": "Cart item soft deleted"}
+
+@router.delete("/", responses={200: {"description": "Successful Response", "content": {"application/json": {"example": {"message": "Cart cleared successfully"}}}}})
+def clear_cart(
+    db: Session = Depends(get_db),
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Clear all items from the current active cart.
+    """
+    cart = db.query(Cart).filter(
+        Cart.user_id == current_user.user_id,
+        Cart.status == CartStatus.ACTIVE
+    ).first()
+    
+    if not cart:
+        raise HTTPException(status_code=404, detail="Cart not found")
+        
+    # Delete all items in the cart
+    db.query(CartItem).filter(CartItem.cart_id == cart.cart_id).delete()
+    
+    # Reset total amount
+    cart.total_amount = 0
+    
+    db.commit()
+    return {"message": "Cart cleared successfully"}

@@ -5,7 +5,6 @@ import enum
 
 class UserRole(str, enum.Enum):
     USER = "USER"
-    SELLER = "SELLER"
     ADMIN = "ADMIN"
 
 class UserStatus(str, enum.Enum):

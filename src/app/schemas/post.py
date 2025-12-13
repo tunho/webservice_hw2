@@ -41,3 +41,19 @@ class PostResponse(PostBase):
 
     class Config:
         from_attributes = True
+
+    model_config = ConfigDict(
+        from_attributes=True,
+        json_schema_extra={
+            "example": {
+                "title": "My First Post",
+                "content": "Hello world! This is my first post.",
+                "category_id": 1,
+                "id": 1,
+                "user_id": 1,
+                "view_count": 10,
+                "created_at": "2025-01-01T00:00:00",
+                "updated_at": "2025-01-01T00:00:00"
+            }
+        }
+    )

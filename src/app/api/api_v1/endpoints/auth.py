@@ -17,8 +17,8 @@ router = APIRouter()
 class OAuth2PasswordRequestFormExample(OAuth2PasswordRequestForm):
     def __init__(
         self,
-        username: str = Form(default="customer@example.com"),
-        password: str = Form(default="customer123"),
+        username: str = Form(default="admin@example.com"),
+        password: str = Form(default="admin123"),
     ):
         super().__init__(
             grant_type="password",

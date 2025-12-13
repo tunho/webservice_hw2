@@ -1,6 +1,6 @@
 from typing import Any, List
 from datetime import datetime
-from fastapi import APIRouter, Body, Depends, HTTPException
+from fastapi import APIRouter, Body, Depends, HTTPException, Path
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.orm import Session
 
@@ -51,8 +51,15 @@ def create_user(
     user = db.query(User).filter(User.email == user_in.email).first()
     if user:
         raise HTTPException(
-            status_code=400,
-            detail="The user with this username already exists in the system.",
+            status_code=409,
+            detail="The user with this email already exists in the system.",
+        )
+    
+    user_phone = db.query(User).filter(User.phone_number == user_in.phone_number).first()
+    if user_phone:
+        raise HTTPException(
+            status_code=409,
+            detail="The user with this phone number already exists in the system.",
         )
     
     # Use dict() to preserve datetime objects for SQLAlchemy
@@ -62,7 +69,17 @@ def create_user(
     db.add(db_obj)
     db.commit()
     db.refresh(db_obj)
+    db.refresh(db_obj)
     return db_obj
+
+@router.get("/me", response_model=UserResponse)
+def read_users_me(
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Get current user.
+    """
+    return current_user
 
 @router.put("/me", response_model=UserResponse)
 def update_user_me(
@@ -91,7 +108,7 @@ def update_user_me(
 
 @router.get("/{user_id}", response_model=UserResponse)
 def read_user_by_id(
-    user_id: int,
+    user_id: int = Path(..., example=1),
     current_user: User = Depends(deps.get_current_user),
     db: Session = Depends(get_db),
 ) -> Any:
@@ -105,37 +122,14 @@ def read_user_by_id(
         raise HTTPException(
             status_code=400, detail="The user doesn't have enough privileges"
         )
+    if not user:
+        raise HTTPException(
+            status_code=404,
+            detail="User not found",
+        )
     return user
 
-@router.put("/{user_id}", response_model=UserResponse)
-def update_user_by_admin(
-    *,
-    db: Session = Depends(get_db),
-    user_id: int,
-    user_in: UserUpdate,
-    current_user: User = Depends(deps.get_current_active_superuser),
-) -> Any:
-    """
-    Update any user (Admin only).
-    """
-    user = db.query(User).filter(User.user_id == user_id).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-        
-    user_data = jsonable_encoder(user)
-    update_data = user_in.dict(exclude_unset=True)
-    
-    if "password" in update_data and update_data["password"]:
-        update_data["password"] = security.get_password_hash(update_data["password"])
-        
-    for field in user_data:
-        if field in update_data:
-            setattr(user, field, update_data[field])
-            
-    db.add(user)
-    db.commit()
-    db.refresh(user)
-    return user
+
 
 @router.post("/logout", responses={200: {"description": "Successful Response", "content": {"application/json": {"example": {"message": "Successfully logged out"}}}}})
 def logout(
@@ -185,14 +179,21 @@ def soft_delete_user_me(
     db.commit()
     return {"message": "User soft deleted successfully"}
 
-@router.delete("/me/hard", responses={200: {"description": "Successful Response", "content": {"application/json": {"example": {"message": "User permanently deleted"}}}}})
-def hard_delete_user_me(
+
+
+@router.delete("/{user_id}/hard", responses={200: {"description": "Successful Response", "content": {"application/json": {"example": {"message": "User permanently deleted by admin"}}}}})
+def delete_user_by_admin(
+    user_id: int = Path(..., example=1),
     db: Session = Depends(get_db),
-    current_user: User = Depends(deps.get_current_user),
+    current_user: User = Depends(deps.get_current_active_superuser),
 ) -> Any:
     """
-    Hard delete own user.
+    Hard delete a user by Admin.
     """
-    db.delete(current_user)
+    user = db.query(User).filter(User.user_id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    db.delete(user)
     db.commit()
-    return {"message": "User permanently deleted"}
+    return {"message": "User permanently deleted by admin"}

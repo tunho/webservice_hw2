@@ -3,6 +3,8 @@ from pydantic import BaseModel, ConfigDict
 from datetime import datetime
 from app.models.order import OrderStatus, PaymentMethod
 
+from pydantic import BaseModel, ConfigDict, Field
+
 class OrderItemSchema(BaseModel):
     book_id: int
     quantity: int
@@ -18,7 +20,7 @@ class OrderBase(BaseModel):
     shipping_address: str
 
 class OrderCreate(OrderBase):
-    items: List[OrderItemSchema] # Simplified for creation
+    items: List[OrderItemSchema] = Field(min_length=1) # Simplified for creation
 
     model_config = ConfigDict(
         json_schema_extra={
@@ -47,6 +49,7 @@ class OrderResponse(OrderBase):
     final_price: int
     status: OrderStatus
     created_at: datetime
+    items: List[OrderItemSchema] = []
     
     model_config = ConfigDict(
         from_attributes=True,
@@ -59,7 +62,7 @@ class OrderResponse(OrderBase):
                 "order_id": 1,
                 "user_id": 1,
                 "total_price": 15000,
-                "discount_amount": 0,
+                "discount_amount": 1000,
                 "final_price": 15000,
                 "status": "CREATED",
                 "created_at": "2025-01-01T00:00:00"

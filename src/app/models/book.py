@@ -12,7 +12,7 @@ class BookStatus(str, enum.Enum):
 
 class Book(Base):
     book_id = Column(Integer, primary_key=True, autoincrement=True)
-    seller_id = Column(Integer, ForeignKey("seller.seller_id"), nullable=False)
+    # seller_id = Column(Integer, ForeignKey("seller.seller_id"), nullable=False) # Removed
     
     title = Column(String(255), nullable=False)
     authors = Column(Text, nullable=False) # JSON array
@@ -37,4 +37,5 @@ class Book(Base):
     updated_at = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=False)
     deleted_at = Column(DateTime, nullable=True)
     
-    seller = relationship("Seller", backref="books")
+    
+    seller = None # Removed relationship

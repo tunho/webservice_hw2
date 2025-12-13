@@ -16,6 +16,19 @@ class ReviewCreate(ReviewBase):
         }
     )
 
+class ReviewUpdate(BaseModel):
+    rating: Optional[int] = None
+    content: Optional[str] = None
+
+    model_config = ConfigDict(
+        json_schema_extra={
+            "example": {
+                "rating": 4,
+                "content": "Updated content"
+            }
+        }
+    )
+
 class ReviewResponse(ReviewBase):
     review_id: int
     user_id: int

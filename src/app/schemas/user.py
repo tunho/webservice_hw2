@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel, EmailStr, ConfigDict
+from pydantic import BaseModel, EmailStr, ConfigDict, Field
 from datetime import datetime
 from app.models.user import UserRole, UserStatus, Gender
 
@@ -14,19 +14,19 @@ class UserBase(BaseModel):
     profile_image: Optional[str] = None
 
 class UserCreate(UserBase):
-    password: str
+    password: str = Field(min_length=4)
     role: UserRole = UserRole.USER
 
     model_config = ConfigDict(
         json_schema_extra={
             "example": {
-                "email": "newuser@example.com",
-                "name": "New User",
+                "email": "demo_user@example.com",
+                "name": "Demo User",
                 "password": "password123",
-                "phone_number": "010-1234-5678",
-                "gender": "MALE",
-                "birth_date": "1990-01-01T00:00:00",
-                "address": "Seoul, Korea",
+                "phone_number": "010-1111-2222",
+                "gender": "FEMALE",
+                "birth_date": "1995-05-05T00:00:00",
+                "address": "Busan, Korea",
                 "role": "USER"
             }
         }

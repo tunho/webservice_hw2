@@ -1,14 +1,13 @@
 # Bookstore API Project
 
 ## 1. 프로젝트 개요
-**문제 정의**: 온라인 서점의 핵심 비즈니스 로직(회원, 상품, 주문, 결제, 정산, 통계)을 RESTful API로 구현하여, 확장 가능하고 유지보수가 용이한 백엔드 시스템을 구축합니다.
+**문제 정의**: 온라인 서점의 핵심 비즈니스 로직(회원, 상품, 주문, 결제)을 RESTful API로 구현하여, 확장 가능하고 유지보수가 용이한 백엔드 시스템을 구축합니다.
 **주요 기능**:
 - **회원 관리**: 회원가입, 로그인(JWT), 프로필 관리, 회원 탈퇴(Soft/Hard Delete).
-- **상품 관리**: 도서 등록/수정/삭제, 카테고리별 조회, 검색, 재고 관리.
-- **주문/결제**: 장바구니, 주문 생성, 결제 처리(Mock), 주문 상태 관리(배송/취소/반품).
-- **프로모션**: 쿠폰 발급/사용, 도서별 할인 정책 적용.
-- **커뮤니티**: 도서 리뷰 및 평점, 댓글, 즐겨찾기(찜).
-- **관리자 기능**: 정산 관리, 통계(랭킹, 이탈률 등) 조회, 전체 주문/회원 관리.
+- **상품 관리**: 도서 등록/수정/삭제(관리자 전용), 카테고리별 조회, 검색, 재고 관리.
+- **주문/결제**: 장바구니, 주문 생성, 결제 처리(Mock), 주문 상태 관리(배송/취소).
+- **커뮤니티**: 도서 리뷰 및 평점, 즐겨찾기(찜).
+- **관리자 기능**: 전체 주문/회원 관리, 도서 관리.
 
 ## 2. 실행 방법
 
@@ -54,37 +53,33 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 | `DB_NAME` | (MySQL 사용 시) DB명 | bookstore |
 
 ## 4. 배포 주소
-- **Base URL**: `http://<SERVER_IP>:8000/api/v1`
-- **Swagger UI**: `http://<SERVER_IP>:8000/docs`
-- **ReDoc**: `http://<SERVER_IP>:8000/redoc`
-- **Health Check**: `http://<SERVER_IP>:8000/health`
+- **Base URL**: `http://113.198.66.68:13072/api/v1`
+- **Swagger UI**: `http://113.198.66.68:13072/docs`
+- **Health Check**: `http://113.198.66.68:13072/health`
 
 ## 5. 인증 플로우 설명
 본 프로젝트는 **JWT (JSON Web Token)** 방식을 사용합니다.
 1.  **로그인**: `POST /auth/login`으로 이메일/비밀번호 전송.
 2.  **토큰 발급**: 유효한 경우 `access_token` 발급.
 3.  **API 요청**: `Authorization: Bearer <access_token>` 헤더를 포함하여 요청.
-4.  **권한 확인**: 서버는 토큰을 검증하고 User Role(USER/SELLER/ADMIN)에 따라 접근 제어.
+4.  **권한 확인**: 서버는 토큰을 검증하고 User Role(USER/ADMIN)에 따라 접근 제어.
 
 ## 6. 역할/권한표
 
-| API 그룹 | ROLE_USER | ROLE_SELLER | ROLE_ADMIN |
-|---|:---:|:---:|:---:|
-| **도서 조회** | O | O | O |
-| **도서 관리(등록/수정/삭제)** | X | O (본인 것만) | O (전체) |
-| **주문/결제** | O | O | O |
-| **장바구니** | O | O | O (타인 것 조회 가능) |
-| **리뷰 작성** | O | O | O |
-| **정산 요청** | X | O | O (테스트용) |
-| **통계/랭킹 조회** | X | X | O |
-| **회원 관리** | O (본인만) | O (본인만) | O (전체 수정/삭제) |
+| API 그룹 | ROLE_USER | ROLE_ADMIN |
+|---|:---:|:---:|
+| **도서 조회** | O | O |
+| **도서 관리(등록/수정/삭제)** | X | O |
+| **주문/결제** | O | O |
+| **장바구니** | O | O |
+| **리뷰 작성** | O | O |
+| **회원 관리** | O (본인만) | O (전체 수정/삭제) |
 
 ## 7. 예제 계정
 
 | 역할 | 이메일 | 비밀번호 | 비고 |
 |---|---|---|---|
 | **관리자** | `admin@example.com` | `admin123` | 모든 권한 보유 |
-| **판매자** | `seller@example.com` | `seller123` | 상품/정산 관리 가능 |
 | **사용자** | `customer@example.com` | `customer123` | 일반 구매/리뷰 가능 |
 
 ## 8. DB 연결 정보 (테스트용)
@@ -96,18 +91,41 @@ uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
 - **User**: `user`
 - **Password**: `password`
 
-## 9. 엔드포인트 요약표
+## 9. 엔드포인트 요약표 (Endpoint Summary)
 
-| Method | Endpoint | 설명 |
-|---|---|---|
-| `POST` | `/auth/login` | 로그인 및 토큰 발급 |
-| `GET` | `/users/me` | 내 프로필 조회 |
-| `GET` | `/books/` | 도서 목록 조회 (검색/필터) |
-| `POST` | `/orders/` | 주문 생성 |
-| `GET` | `/orders/` | 주문 내역 조회 (Admin: 전체) |
-| `GET` | `/carts/` | 장바구니 조회 (Admin: 타인 조회 가능) |
-| `POST` | `/settlements/` | 정산 요청 (Seller/Admin) |
-| `GET` | `/admin/stats/...` | 관리자 통계 (랭킹, 이탈률 등) |
+| Tag | Method | Endpoint | 설명 (Description) | 권한 (Role) |
+| :--- | :---: | :--- | :--- | :---: |
+| **Auth** | `POST` | `/auth/login` | 로그인 및 토큰 발급 | All |
+| **Auth** | `POST` | `/auth/refresh` | 액세스 토큰 갱신 | All |
+| **Users** | `GET` | `/users/` | 회원 목록 조회 (페이지네이션) | Admin |
+| **Users** | `POST` | `/users/` | 회원가입 | All |
+| **Users** | `GET` | `/users/me` | 내 프로필 조회 | User |
+| **Users** | `PATCH` | `/users/me` | 내 프로필 수정 | User |
+| **Users** | `DELETE` | `/users/me` | 회원 탈퇴 (Soft Delete) | User |
+| **Users** | `POST` | `/users/logout` | 로그아웃 | User |
+| **Users** | `DELETE` | `/users/{id}/hard` | 회원 영구 삭제 | Admin |
+| **Books** | `GET` | `/books/` | 도서 목록 조회 (검색/필터) | All |
+| **Books** | `GET` | `/books/{id}` | 도서 상세 조회 | All |
+| **Books** | `POST` | `/books/` | 도서 등록 | Admin |
+| **Books** | `PATCH` | `/books/{id}` | 도서 수정 | Admin |
+| **Books** | `DELETE` | `/books/{id}` | 도서 삭제 | Admin |
+| **Orders** | `POST` | `/orders/` | 주문 생성 | User |
+| **Orders** | `GET` | `/orders/` | 내 주문 내역 조회 (Admin: 전체) | User/Admin |
+| **Orders** | `GET` | `/orders/{id}` | 주문 상세 조회 | User/Admin |
+| **Orders** | `POST` | `/orders/{id}/cancel` | 주문 취소 | User |
+| **Carts** | `GET` | `/carts/` | 장바구니 조회 | User |
+| **Carts** | `POST` | `/carts/items` | 장바구니 담기 | User |
+| **Carts** | `GET` | `/carts/items` | 장바구니 항목 목록 조회 | User |
+| **Carts** | `PATCH` | `/carts/items` | 수량 변경 (PUT) | User |
+| **Carts** | `DELETE` | `/carts/items/{id}` | 항목 삭제 | User |
+| **Carts** | `DELETE` | `/carts/` | 장바구니 비우기 | User |
+| **Reviews** | `GET` | `/reviews/{book_id}` | 도서별 리뷰 조회 | All |
+| **Reviews** | `POST` | `/reviews/` | 리뷰 작성 | User |
+| **Reviews** | `GET` | `/reviews/{id}/detail` | 리뷰 상세 조회 | All |
+| **Reviews** | `PATCH` | `/reviews/{id}` | 리뷰 수정 | User |
+| **Reviews** | `DELETE` | `/reviews/{id}` | 리뷰 삭제 | User/Admin |
+| **Favorites** | `GET` | `/favorites/` | 내 즐겨찾기 목록 | User |
+| **Favorites** | `POST` | `/favorites/{book_id}` | 즐겨찾기 추가/취소 (Toggle) | User |
 
 *(자세한 명세는 Swagger UI 참조)*
 

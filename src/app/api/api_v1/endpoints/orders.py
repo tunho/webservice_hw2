@@ -1,6 +1,6 @@
 from typing import Any, List
-from fastapi import APIRouter, Depends, HTTPException, Query
-from sqlalchemy.orm import Session
+from fastapi import APIRouter, Depends, HTTPException, Query, Path
+from sqlalchemy.orm import Session, joinedload
 
 from app.api import deps
 from app.db.session import get_db
@@ -93,7 +93,7 @@ def read_orders(
     total_elements = query.count()
     total_pages = math.ceil(total_elements / size)
     
-    orders = query.offset(page * size).limit(size).all()
+    orders = query.options(joinedload(Order.items)).offset(page * size).limit(size).all()
     
     return {
         "content": orders,
@@ -103,16 +103,15 @@ def read_orders(
         "totalPages": total_pages
     }
 
-@router.patch("/{order_id}", response_model=OrderResponse)
-def update_order(
+@router.get("/{order_id}", response_model=OrderResponse)
+def read_order_by_id(
     *,
     db: Session = Depends(get_db),
-    order_id: int,
-    status: OrderStatus = Query(..., description="New status for the order"),
+    order_id: int = Path(..., example=1),
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """
-    Update order status (Cancel, Return, etc).
+    Get order by ID.
     """
     order = db.query(Order).filter(Order.order_id == order_id).first()
     if not order:
@@ -121,7 +120,29 @@ def update_order(
     if order.user_id != current_user.user_id and current_user.role != UserRole.ADMIN:
         raise HTTPException(status_code=403, detail="Not authorized")
         
-    order.status = status
+    return order
+
+@router.patch("/{order_id}/cancel", response_model=OrderResponse)
+def cancel_order(
+    *,
+    db: Session = Depends(get_db),
+    order_id: int = Path(..., example=1),
+    current_user: User = Depends(deps.get_current_user),
+) -> Any:
+    """
+    Cancel an order.
+    """
+    order = db.query(Order).filter(Order.order_id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+        
+    if order.user_id != current_user.user_id and current_user.role != UserRole.ADMIN:
+        raise HTTPException(status_code=403, detail="Not authorized")
+        
+    if order.status not in [OrderStatus.CREATED, OrderStatus.PAID]:
+         raise HTTPException(status_code=409, detail="Cannot cancel order in current status")
+
+    order.status = OrderStatus.CANCELED
     db.add(order)
     db.commit()
     db.refresh(order)

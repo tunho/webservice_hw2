@@ -1,6 +1,5 @@
 from typing import Generator, Optional
 from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
@@ -11,14 +10,15 @@ from app.db.session import get_db
 from app.models.user import User, UserRole, UserStatus
 from app.schemas.token import TokenPayload
 
-reusable_oauth2 = OAuth2PasswordBearer(
-    tokenUrl=f"{settings.API_V1_STR}/auth/login"
-)
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+
+security_scheme = HTTPBearer()
 
 def get_current_user(
     db: Session = Depends(get_db),
-    token: str = Depends(reusable_oauth2)
+    token_creds: HTTPAuthorizationCredentials = Depends(security_scheme)
 ) -> User:
+    token = token_creds.credentials
     try:
         payload = jwt.decode(
             token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM]
@@ -32,6 +32,12 @@ def get_current_user(
     user = db.query(User).filter(User.user_id == token_data.sub).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
+    
+    # Debug
+    print(f"DEBUG: user.status={user.status} type={type(user.status)}")
+    print(f"DEBUG: UserStatus.ACTIVE={UserStatus.ACTIVE} type={type(UserStatus.ACTIVE)}")
+    print(f"DEBUG: Comparison={user.status != UserStatus.ACTIVE}")
+    
     if user.status != UserStatus.ACTIVE:
         raise HTTPException(status_code=400, detail="Inactive user")
     return user

@@ -1,5 +1,5 @@
 from typing import Any, List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Path
 from sqlalchemy.orm import Session
 from sqlalchemy import or_
 
@@ -7,7 +7,6 @@ from app.api import deps
 from app.db.session import get_db
 from app.models.book import Book, BookStatus
 from app.models.user import User, UserRole
-from app.models.seller import Seller
 from app.schemas.book import BookCreate, BookUpdate, BookResponse
 from datetime import datetime
 
@@ -23,6 +22,7 @@ def read_books(
     size: int = 20,
     keyword: Optional[str] = None,
     category: Optional[str] = None,
+    sort: str = "created_at,desc",
 ) -> Any:
     """
     Retrieve books with pagination.
@@ -34,6 +34,17 @@ def read_books(
     if category:
         query = query.filter(Book.categories.ilike(f"%{category}%"))
         
+    # Sorting logic
+    try:
+        sort_field, sort_dir = sort.split(",")
+        if sort_dir.lower() == "desc":
+            query = query.order_by(getattr(Book, sort_field).desc())
+        else:
+            query = query.order_by(getattr(Book, sort_field).asc())
+    except (ValueError, AttributeError):
+        # Fallback to default if invalid sort format or field
+        query = query.order_by(Book.created_at.desc())
+        
     total_elements = query.count()
     total_pages = math.ceil(total_elements / size)
     
@@ -44,7 +55,8 @@ def read_books(
         "page": page,
         "size": size,
         "totalElements": total_elements,
-        "totalPages": total_pages
+        "totalPages": total_pages,
+        "sort": sort
     }
 
 @router.post("/", response_model=BookResponse)
@@ -57,28 +69,15 @@ def create_book(
     """
     Create new book.
     """
-    if current_user.role not in [UserRole.SELLER, UserRole.ADMIN]:
-        raise HTTPException(status_code=400, detail="Not enough privileges")
+    if current_user.role != UserRole.ADMIN:
+        raise HTTPException(status_code=403, detail="Not authorized")
         
-    # Check if seller profile exists if role is SELLER
-    seller_id = 1 # Default fallback
-    
-    if current_user.role == UserRole.SELLER:
-        seller = db.query(Seller).filter(Seller.user_id == current_user.user_id).first()
-        if not seller:
-            raise HTTPException(status_code=400, detail="Seller profile not found. Please register as a seller first.")
-        seller_id = seller.seller_id
-    elif current_user.role == UserRole.ADMIN:
-        # For Admin, try to find any active seller to link to (for testing purposes)
-        # In a real app, Admin might specify seller_id in request
-        seller = db.query(Seller).first()
-        if seller:
-            seller_id = seller.seller_id
-        else:
-             # If no seller exists at all, we can't create a book due to FK constraint
-             raise HTTPException(status_code=400, detail="No seller exists in the system to link this book to.")
-
-    db_obj = Book(**book_in.dict(), seller_id=seller_id)
+    # Check duplicate ISBN
+    existing_book = db.query(Book).filter(Book.isbn == book_in.isbn).first()
+    if existing_book:
+        raise HTTPException(status_code=409, detail="A book with this ISBN already exists.")
+        
+    db_obj = Book(**book_in.dict())
     db.add(db_obj)
     db.commit()
     db.refresh(db_obj)
@@ -88,7 +87,7 @@ def create_book(
 def read_book(
     *,
     db: Session = Depends(get_db),
-    book_id: int,
+    book_id: int = Path(..., example=1),
 ) -> Any:
     """
     Get book by ID.
@@ -104,7 +103,7 @@ def read_book(
 def update_book(
     *,
     db: Session = Depends(get_db),
-    book_id: int,
+    book_id: int = Path(..., example=1),
     book_in: BookUpdate,
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
@@ -117,10 +116,10 @@ def update_book(
     if book.status == BookStatus.DELETED:
         raise HTTPException(status_code=404, detail="Book not found")
         
-    # Check permission (Seller owns book or Admin)
-    if current_user.role == UserRole.USER:
+    # Check permission (Admin only)
+    if current_user.role != UserRole.ADMIN:
          raise HTTPException(status_code=403, detail="Not authorized")
-         
+
     update_data = book_in.dict(exclude_unset=True)
     for field, value in update_data.items():
         setattr(book, field, value)
@@ -134,7 +133,7 @@ def update_book(
 def delete_book(
     *,
     db: Session = Depends(get_db),
-    book_id: int,
+    book_id: int = Path(..., example=1),
     current_user: User = Depends(deps.get_current_user),
 ) -> Any:
     """
@@ -144,7 +143,7 @@ def delete_book(
     if not book:
         raise HTTPException(status_code=404, detail="Book not found")
         
-    if current_user.role == UserRole.USER:
+    if current_user.role != UserRole.ADMIN:
          raise HTTPException(status_code=403, detail="Not authorized")
          
     # Soft delete

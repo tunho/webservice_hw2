@@ -42,9 +42,16 @@ async def http_exception_handler(request: Request, exc: StarletteHTTPException):
     elif exc.status_code == 403:
         code = "FORBIDDEN"
     elif exc.status_code == 404:
-        code = "RESOURCE_NOT_FOUND"
+        if "User" in str(exc.detail):
+             code = "USER_NOT_FOUND"
+        else:
+             code = "RESOURCE_NOT_FOUND"
     elif exc.status_code == 409:
-        code = "STATE_CONFLICT"
+        detail = str(exc.detail)
+        if "Duplicate" in detail or "already exists" in detail:
+            code = "DUPLICATE_RESOURCE"
+        else:
+            code = "STATE_CONFLICT"
     elif exc.status_code == 422:
         code = "UNPROCESSABLE_ENTITY"
     elif exc.status_code == 429:
@@ -83,9 +90,14 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         ).model_dump(mode="json"),
     )
 
+import logging
+
+logger = logging.getLogger("api")
+
 async def sqlalchemy_exception_handler(request: Request, exc: SQLAlchemyError):
-    # Log the error here in a real app
-    # print(f"DB Error: {exc}")
+    # Log the error with stack trace
+    logger.error(f"DB Error: {str(exc)}", exc_info=True)
+    
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content=ErrorResponse(
