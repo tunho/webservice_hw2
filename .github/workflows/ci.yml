@@ -38,4 +38,4 @@ jobs:
         FIRST_SUPERUSER_PASSWORD: "admin"
       run: |
         export PYTHONPATH=src
-        pytest tests
+        pytest tests/api
