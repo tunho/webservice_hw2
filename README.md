@@ -28,6 +28,7 @@ pip install -r requirements.txt
 # .env.example 파일을 복사하여 .env 생성
 cp .env.example .env
 # (선택) .env 파일을 열어 DB 설정 등을 수정
+# 주의: 제출된 .env는 Docker용(JCloud) 설정입니다. 로컬 실행 시 DB_HOST=localhost 로 변경해야 합니다.
 ```
 
 **3. 데이터베이스 초기화 (마이그레이션 & 시드)**
