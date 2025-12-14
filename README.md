@@ -23,7 +23,14 @@ source venv/bin/activate  # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-**2. 데이터베이스 초기화 (마이그레이션 & 시드)**
+**2. 환경변수 설정**
+```bash
+# .env.example 파일을 복사하여 .env 생성
+cp .env.example .env
+# (선택) .env 파일을 열어 DB 설정 등을 수정
+```
+
+**3. 데이터베이스 초기화 (마이그레이션 & 시드)**
 ```bash
 # 초기 데이터 생성 (Admin, User, Book, Order 등)
 PYTHONPATH=src python scripts/seed.py
