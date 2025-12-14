@@ -25,10 +25,22 @@ pip install -r requirements.txt
 
 **2. 환경변수 설정**
 ```bash
-# .env.example 파일을 복사하여 .env 생성
-cp .env.example .env
-# (선택) .env 파일을 열어 DB 설정 등을 수정
-# 주의: 제출된 .env는 Docker용(JCloud) 설정입니다. 로컬 실행 시 DB_HOST=localhost 로 변경해야 합니다.
+# 로컬 실행용 .env 파일 생성 (SQLite 설정)
+cat <<EOF > .env
+PROJECT_NAME="Bookstore API"
+API_V1_STR="/api/v1"
+DB_HOST=localhost
+DB_PORT=3306
+DB_USER=root
+DB_PASSWORD=password
+DB_NAME=bookstore
+SECRET_KEY=dev_secret_key
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+REFRESH_TOKEN_EXPIRE_DAYS=7
+FIRST_SUPERUSER=admin@example.com
+FIRST_SUPERUSER_PASSWORD=admin
+EOF
 ```
 
 **3. 데이터베이스 초기화 (마이그레이션 & 시드)**
